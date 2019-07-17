@@ -4,7 +4,7 @@ import java.io.*;
 
 public class Test16 {
 	
-	static String name = "D:\\work\\book-demo\\src\\com\\book\\book_18\\_006\\test16.txt";
+	static String name = System.getProperty("user.dir") + "\\src\\com\\book\\book_18\\_006\\test16.txt";
 	/*
 		1
 		2
