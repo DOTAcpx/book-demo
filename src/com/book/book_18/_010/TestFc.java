@@ -1,9 +1,10 @@
 package com.book.book_18._010;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 
 public class TestFc {
 	static String fileName = System.getProperty("user.dir") + "\\src\\com\\book\\book_18\\_010\\" + "testFc.txt";
