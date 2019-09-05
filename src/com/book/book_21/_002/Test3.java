@@ -5,12 +5,13 @@ import java.util.concurrent.Executors;
 
 public class Test3 {
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		cachedThreadTest();
-		System.out.println();
 		fixedThreadTest();
-		System.out.println();
 		singleThreadTest();
+		System.out.println(Test1.getString());
+		Thread.sleep(1000L);
+		System.out.println(Test1.getString());
 	}
 	
 	// 线程数由类自动定义,执行方法
