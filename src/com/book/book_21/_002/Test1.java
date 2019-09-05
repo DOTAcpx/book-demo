@@ -21,7 +21,6 @@ public class Test1 implements Runnable{
             // 该方法的作用是该线程执行完重要的一个步骤了,可以先切换其他线程去运作
             Thread.yield();
         }
-        System.out.println();
     }
 
     public static void main(String[] args) {
