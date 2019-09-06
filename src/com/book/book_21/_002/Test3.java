@@ -1,17 +1,20 @@
 package com.book.book_21._002;
 
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import static com.book.book_21._002.Test2.*;
 
 public class Test3 {
 	
 	public static void main(String[] args) throws Exception {
-		cachedThreadTest();
-		fixedThreadTest();
-		singleThreadTest();
-		System.out.println(Test1.getString());
-		Thread.sleep(1000L);
-		System.out.println(Test1.getString());
+//		cachedThreadTest();
+//		fixedThreadTest();
+//		singleThreadTest();
+		cachedThreadSubmitTest();
+//		System.out.println(Test1.getString());
 	}
 	
 	// 线程数由类自动定义,执行方法
@@ -22,6 +25,25 @@ public class Test3 {
 		}
 		// 执行shutdown后,之后使用该类执行多线程则不会产生效果
 		cachedThreadPool.shutdown();
+	}
+	
+	// 线程数由类自动定义,执行方法
+	public static void cachedThreadSubmitTest() {
+		List<Future<Integer>> list = new ArrayList<>();
+		ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+		
+		for(int i = 0; i < 5; i++) {
+			list.add(cachedThreadPool.submit(TEST2));
+		}
+		// 执行shutdown后,之后使用该类执行多线程则不会产生效果
+		cachedThreadPool.shutdown();
+		list.forEach(f -> {
+			try {
+				System.out.print(f.get() + " ");
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
 	// 需指定特定的线程数,之后使用这些线程数执行方法
