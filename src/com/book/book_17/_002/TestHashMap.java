@@ -3,6 +3,7 @@ package com.book.book_17._002;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.AbstractCollection;
@@ -21,48 +22,48 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import sun.misc.SharedSecrets;
+//import sun.misc.SharedSecrets;
 
 @SuppressWarnings("restriction")
 public class TestHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>, Cloneable, Serializable {
 
-	public static void main(String[] args) {
-//		1
-//		6
-//		12
-//		17
-//		23
-//		28
-//		34
-//		39
-//		45
-//		56
-//		105
-//		116
-		TestHashMap<String, String> testHashMap = new TestHashMap<String,String>();
-		testHashMap.put("1", "222");
-		testHashMap.put("6", "222");
-		testHashMap.put("12", "222");
-		testHashMap.put("17", "123");
-		testHashMap.put("23", "123");
-		testHashMap.put("28", "123");
-		testHashMap.put("34", "123");
-		testHashMap.put("39", "123");
-		testHashMap.put("45", "123");
-		testHashMap.put("56", "123");
-		testHashMap.put("105", "123");
-		testHashMap.put("116", "123");
-		testHashMap.forEach((key,value)->{
-			System.out.println(key + " --- " + value);
-		});
-		// 1 ---- 1
-		// 2 ---- 10
-		// 4 ---- 100
-		// 8 ---- 1000
-		// 15 ---- 1111
-		// false则为0 true为1
-		// System.out.println(15 & 4);
-	}
+//	public static void main(String[] args) {
+////		1
+////		6
+////		12
+////		17
+////		23
+////		28
+////		34
+////		39
+////		45
+////		56
+////		105
+////		116
+//		TestHashMap<String, String> testHashMap = new TestHashMap<String,String>();
+//		testHashMap.put("1", "222");
+//		testHashMap.put("6", "222");
+//		testHashMap.put("12", "222");
+//		testHashMap.put("17", "123");
+//		testHashMap.put("23", "123");
+//		testHashMap.put("28", "123");
+//		testHashMap.put("34", "123");
+//		testHashMap.put("39", "123");
+//		testHashMap.put("45", "123");
+//		testHashMap.put("56", "123");
+//		testHashMap.put("105", "123");
+//		testHashMap.put("116", "123");
+//		testHashMap.forEach((key,value)->{
+//			System.out.println(key + " --- " + value);
+//		});
+//		// 1 ---- 1
+//		// 2 ---- 10
+//		// 4 ---- 100
+//		// 8 ---- 1000
+//		// 15 ---- 1111
+//		// false则为0 true为1
+//		// System.out.println(15 & 4);
+//	}
 	
 	private static final long serialVersionUID = 3624988123423181265L;
 
@@ -557,7 +558,6 @@ public class TestHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>, C
 		if ((tab = table) == null || (n = tab.length) == 0)
 			n = (tab = resize()).length;
 		// 如果该键没有重复则创建新的Node实例
-		System.out.println((n - 1) & hash);
 		if ((p = tab[i = (n - 1) & hash]) == null)
 			tab[i] = newNode(hash, key, value, null);
 		else {
@@ -696,20 +696,28 @@ public class TestHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>, C
 	final void treeifyBin(Node<K, V>[] tab, int hash) {
 		int n, index;
 		Node<K, V> e;
+		// 如果数组为空或者长度比64小,则重新分配一下大小
 		if (tab == null || (n = tab.length) < MIN_TREEIFY_CAPACITY)
 			resize();
 		else if ((e = tab[index = (n - 1) & hash]) != null) {
+			// 创建总hd链表模式的变量名,和临时的tl
 			TreeNode<K, V> hd = null, tl = null;
 			do {
+				// 将 e 元素转为 TreeNode 类型,使用红黑数比较简单
 				TreeNode<K, V> p = replacementTreeNode(e, null);
 				if (tl == null)
+					// 如果临时的tl为空,则表示为一开始,将总hd与p元素链接起来
 					hd = p;
 				else {
+					// p的上一个元素为tl
 					p.prev = tl;
+					// 指定tl的下一个元素为e转换出来的
 					tl.next = p;
 				}
+				// 之后将当前元素赋值到tl上
 				tl = p;
 			} while ((e = e.next) != null);
+			// 重新将tab数组里的元素转为hd元素
 			if ((tab[index] = hd) != null)
 				hd.treeify(tab);
 		}
@@ -1359,7 +1367,7 @@ public class TestHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>, C
 
 			// Check Map.Entry[].class since it's the nearest public type to
 			// what we're actually creating.
-			SharedSecrets.getJavaOISAccess().checkArray(s, Map.Entry[].class, cap);
+//			SharedSecrets.getJavaOISAccess().checkArray(s, Map.Entry[].class, cap);
 			@SuppressWarnings({ "unchecked" })
 			Node<K, V>[] tab = (Node<K, V>[]) new Node[cap];
 			table = tab;
@@ -1759,10 +1767,17 @@ public class TestHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>, C
 	 * 因此可以用作常规节点或链接节点的扩展。
 	 */
 	static final class TreeNode<K, V> extends TestHashMap.Entry<K, V> {
+		
+		/*
+		 * 		parent
+		 * 	left	right
+		 * 
+		 */
+		
 		TreeNode<K, V> parent; // 红黑树链接
 		TreeNode<K, V> left;
 		TreeNode<K, V> right;
-		TreeNode<K, V> prev; // 删除时需要取消下一个链接
+		TreeNode<K, V> prev; // 上一个节点的位置
 		boolean red;
 
 		TreeNode(int hash, K key, V val, Node<K, V> next) {
@@ -1867,16 +1882,20 @@ public class TestHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>, C
 				next = (TreeNode<K, V>) x.next;
 				x.left = x.right = null;
 				if (root == null) {
+					// 先将红黑数连接清空
 					x.parent = null;
 					x.red = false;
+					// 将值赋予临时变量
 					root = x;
 				} else {
 					K k = x.key;
 					int h = x.hash;
 					Class<?> kc = null;
+					// 临时变量父节点
 					for (TreeNode<K, V> p = root;;) {
 						int dir, ph;
 						K pk = p.key;
+						// 根据key的hash值判断将key放在左边还是右边
 						if ((ph = p.hash) > h)
 							dir = -1;
 						else if (ph < h)
@@ -1884,14 +1903,17 @@ public class TestHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>, C
 						else if ((kc == null && (kc = comparableClassFor(k)) == null)
 								|| (dir = compareComparables(kc, k, pk)) == 0)
 							dir = tieBreakOrder(k, pk);
-
+						// 将父节点设置到xp
 						TreeNode<K, V> xp = p;
 						if ((p = (dir <= 0) ? p.left : p.right) == null) {
+							// 如果决定的一边为空,将父节点设置为xp
 							x.parent = xp;
+							// 之后将x设置到左边或者右边
 							if (dir <= 0)
 								xp.left = x;
 							else
 								xp.right = x;
+							// 总的父节点和子节点传入
 							root = balanceInsertion(root, x);
 							break;
 						}
@@ -2133,24 +2155,52 @@ public class TestHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>, C
 
 		/* ------------------------------------------------------------ */
 		// Red-black tree methods, all adapted from CLR
-
+		/**
+		 * 将树形改变如下<br>
+		 * 		p		  r		<br>
+		 * 	   / \	     / \	<br>
+		 * 	  l	  r  -> p   rr	<br>
+		 * 		 / \   / \		<br>
+		 * 		rl rr l  rl		<br>
+		 * 如果r为第一个节点,则会将 r的红属性设置为false
+		 * 
+		 */
 		static <K, V> TreeNode<K, V> rotateLeft(TreeNode<K, V> root, TreeNode<K, V> p) {
+			// r 当前节点的右边,pp 父节点,rl 右节点的左节点
 			TreeNode<K, V> r, pp, rl;
+			// 当前节点不为空 并且 右节点不为空
 			if (p != null && (r = p.right) != null) {
+				// 将 右节点设置为 右节点的左节点 , 不为空
 				if ((rl = p.right = r.left) != null)
+					// 右左节点的父节点设置成当前,也就是将 右节点设置为当前
 					rl.parent = p;
+				// 将右节点的父节点设置当前的父节点, 如果为空
 				if ((pp = r.parent = p.parent) == null)
+					//将总点设置右点,之后取消红点
 					(root = r).red = false;
-				else if (pp.left == p)
-					pp.left = r;
-				else
+				else if (pp.left == p) // 父节点的左节点 为当前节点 
+					pp.left = r;// 将父节点 左节点 设置为 当前右节点
+				else// 否则将 父节点 右节点设置为右节点
 					pp.right = r;
+				// 右左节点设置为当前
 				r.left = p;
+				// 当前的父节点设置为右节点
 				p.parent = r;
 			}
+			// 返回总节点
 			return root;
 		}
 
+		/**
+		 * 将树形改变如下<br>
+		 * 		p		  l		<br>
+		 * 	   / \	     / \	<br>
+		 * 	  l	  r  -> ll  p	<br>
+		 * 	 / \		   / \	<br>
+		 * 	ll	lr	   	  lr  r	<br>
+		 * 如果l为第一个节点,则会将 r的红属性设置为false
+		 * 
+		 */
 		static <K, V> TreeNode<K, V> rotateRight(TreeNode<K, V> root, TreeNode<K, V> p) {
 			TreeNode<K, V> l, pp, lr;
 			if (p != null && (l = p.left) != null) {
@@ -2169,32 +2219,55 @@ public class TestHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>, C
 		}
 
 		static <K, V> TreeNode<K, V> balanceInsertion(TreeNode<K, V> root, TreeNode<K, V> x) {
+			// 设置为红节点
 			x.red = true;
+			// xp 父节点,xpp 父节点的父节点, xppl 父节点的父节点的左边, xppr 父节点的父节点的右边
 			for (TreeNode<K, V> xp, xpp, xppl, xppr;;) {
+				// 将父节点设置到临时变量中
 				if ((xp = x.parent) == null) {
+					// 如果是一开始,就存在父节点为空,将值设置为黑节点返回
 					x.red = false;
 					return x;
+					// 如果父节点为黑 或者 父节点的父节点不存在
 				} else if (!xp.red || (xpp = xp.parent) == null)
 					return root;
+				// 如果父节点 在 父节点的父节点的左边
 				if (xp == (xppl = xpp.left)) {
+					// 如果 父节点的父节点右边 不为空 并且 爷爷节点右边为红点
 					if ((xppr = xpp.right) != null && xppr.red) {
+						// 将 爷爷右边取消红点
 						xppr.red = false;
+						// 将 父节点 取消红点
 						xp.red = false;
+						// 爷爷节点 设置为红点
 						xpp.red = true;
+						// 将爷爷节点设置为当前
 						x = xpp;
+					// 爷爷右为空 或者为黑点
 					} else {
+						// 父右节点 是自己
 						if (x == xp.right) {
+							// 进行位置左移
 							root = rotateLeft(root, x = xp);
+							// 调整模式
+							// 父节点    为空,则将爷爷节点设置为空
+							// 父节点不为空,则将爷爷节点设置为父节点的父节点
 							xpp = (xp = x.parent) == null ? null : xp.parent;
 						}
+						// 父节点 不为空
 						if (xp != null) {
+							// 父节点设置为黑点
 							xp.red = false;
+							// 爷爷节点不为空
 							if (xpp != null) {
+								// 将爷爷设置 红点
 								xpp.red = true;
+								// 进行位置右移
 								root = rotateRight(root, xpp);
 							}
 						}
 					}
+				// 如果父节点 在 父节点的父节点的右边
 				} else {
 					if (xppl != null && xppl.red) {
 						xppl.red = false;
