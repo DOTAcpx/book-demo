@@ -30,28 +30,25 @@ package com.leecode.interview._00013;
 public class MovingCount {
     public int movingCount(int m, int n, int k) {
         int[][] nums=new int[n][m];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                if(addOne(i, j, k)){
-                    nums[i][j]=1;
-                }
-            }
-        }
-        return find(0, 0, nums);
+        return find(0, 0, k, nums);
     }
 
-    public int find(int x, int y, int[][] nums){
-        if(nums[x][y] == 0){
+    public int find(int x, int y, int k, int[][] nums){
+        if(nums[x][y] == 1){
             return 0;
         }else {
-            nums[x][y]=0;
-            return 1+((x+1)<nums.length?find(x+1, y, nums):0)+((y+1)<nums[0].length?find(x, y+1, nums):0);
+            nums[x][y]=1;
+            if(addOne(x, y, k)){
+                return 1+((x+1)<nums.length?find(x+1, y, k, nums):0)+((y+1)<nums[0].length?find(x, y+1, k, nums):0);
+            }else {
+                return 0;
+            }
         }
     }
 
     public boolean addOne(int n, int m, int k){
         if(n==0){
-           return (m%10+m/10%10+m/100) <= k;
+            return (m%10+m/10%10+m/100) <= k;
         }else if(m==0){
             return (n%10+n/10%10+n/100) <= k;
         }
